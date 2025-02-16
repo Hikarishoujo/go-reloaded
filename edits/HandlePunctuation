@@ -1,0 +1,12 @@
+package text_edits
+
+import (
+	"regexp"
+)
+
+func HandlePunctuation(text string) string {
+	text = regexp.MustCompile(`\s*\.\.\.\s*`).ReplaceAllString(text, "...")
+	text = regexp.MustCompile(`\s*([,.!?;:]),\s*`).ReplaceAllString(text, "$1, ")
+	text = regexp.MustCompile(`,\s*([,.!?;:]),\s*`).ReplaceAllString(text, ", $1, ")
+	return text
+}

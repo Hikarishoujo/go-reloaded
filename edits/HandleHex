@@ -1,0 +1,25 @@
+package text_edits
+
+import (
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+func HandleHex(text string) string {
+	re := regexp.MustCompile(`([0-9A-Fa-f]+)\s*\(\s*hex\s*\)`)
+	return re.ReplaceAllStringFunc(text, func(s string) string {
+		match := re.FindStringSubmatch(s)
+		if len(match) < 2 {
+			return s
+		}
+
+		numStr := strings.TrimSpace(match[1])
+		num, err := strconv.ParseUint(numStr, 16, 64)
+		if err != nil {
+			return s
+		}
+		return fmt.Sprintf("%d", num)
+	}
+}

@@ -1,0 +1,53 @@
+package text_edits
+
+import (
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+func HandleCaseModifications(text string) string {
+	text, _ = handleCasePattern(text, "(up)", strings.ToUpper)
+	text, _ = handleCasePattern(text, "(low)", strings.ToLower)
+	text, _ = handleCasePattern(text, "(cap)", func(s string) string {
+		if len(s) > 0 {
+			return s[0:1] + strings.ToLower(s[1:])
+		}
+		return s
+	}
+	return text
+}
+
+func handleCasePattern(text, pattern string, transform func(string) string) (string, error) {
+	re := regexp.MustCompile(`(\w+)\s*\(` + pattern + `(?:,\s*(\d+))?\)`)
+	return re.ReplaceAllStringFunc(text, func(s string) string {
+		match := re.FindStringSubmatch(s)
+		if len(match) < 2 {
+			return s
+		}
+
+		word := match[1]
+		countStr := match[2]
+		count := 1
+		if countStr != "" {
+			c, _ := strconv.Atoi(countStr)
+			count = c
+		}
+
+		words := strings.Fields(s)
+		for i, w := range words {
+			if w == word {
+				start := i
+				end := start + count
+				if end > len(words) {
+					end = len(words)
+				}
+				for j := start; j < end; j++ {
+					words[j] = transform(words[j])
+				}
+				break
+			}
+		}
+		return strings.Join(words, " ")
+	} nil
+}

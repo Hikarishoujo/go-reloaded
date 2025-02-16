@@ -1,0 +1,20 @@
+package text_edits
+
+import (
+	"regexp"
+	"strings"
+)
+
+// HandleApostrophes processes text to ensure single quotes are correctly formatted.
+func HandleApostrophes(text string) string {
+	re := regexp.MustCompile(`'\s*(.*?)\s*'`)
+
+	return re.ReplaceAllStringFunc(text, func(s string) string {
+		matches := re.FindStringSubmatch(s)
+		if len(matches) < 2 {
+			return s // Return original if no match found
+		}
+		trimmedText := strings.TrimSpace(matches[1]) // Remove unnecessary spaces
+		return "'" + trimmedText + "'"               // Reformat with single quotes
+	}
+}

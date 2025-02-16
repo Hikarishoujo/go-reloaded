@@ -1,0 +1,30 @@
+package text_edits
+
+import (
+	"regexp"
+	"strings"
+
+	
+)
+
+// HandleArticles corrects "a" to "an" before words that start with a vowel or 'h'.
+func HandleArticles(text string) string {
+	vowels := "aeiouh"
+	re := regexp.MustCompile(`\b([Aa])\s+([a-zA-Z])`)
+
+	return re.ReplaceAllStringFunc(text, func(s string) string {
+		match := re.FindStringSubmatch(s)
+		if len(match) < 3 {
+			return s
+		}
+
+		article, nextWordFirstLetter := match[1], match[2]
+		if strings.ContainsRune(vowels, rune(strings.ToLower(nextWordFirstLetter)[0])) {
+			if article == "A" {
+				return "An " + nextWordFirstLetter
+			}
+			return "an " + nextWordFirstLetter
+		}
+		return s
+	}
+}
